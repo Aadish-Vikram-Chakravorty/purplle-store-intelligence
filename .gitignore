@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.env
+venv/
+.venv/
+events.jsonl
+data/videos/
