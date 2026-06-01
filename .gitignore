@@ -6,3 +6,5 @@ venv/
 events.jsonl
 data/videos/
 data/*.db
+CCTV Footage/
+yolov8n.pt
