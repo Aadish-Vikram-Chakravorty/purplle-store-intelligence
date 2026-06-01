@@ -5,3 +5,4 @@ venv/
 .venv/
 events.jsonl
 data/videos/
+data/*.db
