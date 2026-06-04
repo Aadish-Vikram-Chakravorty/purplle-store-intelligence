@@ -168,3 +168,51 @@ AI tools were used to:
 All generated outputs were manually reviewed, modified, tested, and integrated into the final solution.
 
 The final architectural decisions were made after evaluating implementation complexity, accuracy, and business impact.
+
+
+---
+
+# Decision 4: Simple Visitor Tracking vs DeepSORT/ByteTrack
+
+## Problem
+
+The system needs to assign visitor identities across detections.
+
+## Options Considered
+
+### Option A
+
+DeepSORT / ByteTrack
+
+Pros:
+
+* Better identity persistence
+* Handles occlusions
+* Production-ready tracking
+
+Cons:
+
+* Additional complexity
+* Higher compute requirements
+
+### Option B
+
+Lightweight ID Assignment
+
+Pros:
+
+* Simple implementation
+* Fast execution
+* Easy debugging
+
+Cons:
+
+* Less robust identity tracking
+
+## Final Choice
+
+Lightweight ID Assignment
+
+## Reasoning
+
+Given the challenge timeline, a lightweight visitor tracking mechanism was implemented to demonstrate end-to-end event generation and analytics. For production deployment, a dedicated tracking framework such as ByteTrack or DeepSORT would be recommended.
