@@ -1,5 +1,9 @@
 import cv2
+import requests
+
 from ultralytics import YOLO
+from tracker import get_visitor_id
+from emit import create_event
 
 # Load YOLO model
 model = YOLO("yolov8n.pt")
@@ -20,17 +24,16 @@ cv2.resizeWindow(
     1080
 )
 
+seen_visitors = set()
+
 while True:
 
     ret, frame = cap.read()
-    print("Original Frame Shape:", frame.shape)
 
     if not ret:
         break
 
-    # Run YOLO detection
     results = model(frame)
-    print("YOLO Input Shape:", results[0].orig_shape)
 
     person_count = 0
 
@@ -40,12 +43,44 @@ while True:
 
             class_id = int(box.cls[0])
 
-            # Person class
             if class_id == 0:
 
                 person_count += 1
 
-                x1, y1, x2, y2 = map(int, box.xyxy[0])
+                track_id = person_count
+
+                visitor_id = get_visitor_id(track_id)
+
+                if visitor_id not in seen_visitors:
+
+                    seen_visitors.add(visitor_id)
+
+                    event = create_event(
+                        visitor_id=visitor_id,
+                        camera_id="CAM3",
+                        event_type="ENTRY",
+                        zone="STORE"
+                    )
+
+                    try:
+
+                        response = requests.post(
+                            "http://127.0.0.1:8000/events/ingest",
+                            json=event,
+                            timeout=2
+                        )
+
+                        print("Event Sent:", event)
+                        print("Status:", response.status_code)
+
+                    except Exception as e:
+
+                        print("API Error:", e)
+
+                x1, y1, x2, y2 = map(
+                    int,
+                    box.xyxy[0]
+                )
 
                 cv2.rectangle(
                     frame,
@@ -57,7 +92,7 @@ while True:
 
                 cv2.putText(
                     frame,
-                    "Person",
+                    visitor_id,
                     (x1, y1 - 10),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.5,
